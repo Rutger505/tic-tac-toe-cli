@@ -62,12 +62,18 @@ fn main() {
 }
 
 fn get_user_coordinate() -> (usize, usize) {
-    (get_user_number("Enter row number", 1, 3).try_into().unwrap(),
-     get_user_number("Enter column number", 1, 3).try_into().unwrap())
+    (
+        get_user_number("Enter row number", 1, 3)
+            .try_into()
+            .unwrap(),
+        get_user_number("Enter column number", 1, 3)
+            .try_into()
+            .unwrap(),
+    )
 }
 
 fn get_user_number(prompt: &str, min: i32, max: i32) -> i32 {
-    let mut number= "".parse::<i32>();
+    let mut number = "".parse::<i32>();
 
     loop {
         match number {
