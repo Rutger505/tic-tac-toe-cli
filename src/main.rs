@@ -39,7 +39,12 @@ fn main() {
 
         print_board(&board);
 
-        let (x, y) = get_user_coordinate();
+        let (mut x, mut y) = get_user_coordinate();
+
+        while board[x - 1][y - 1] != FieldValue::Empty {
+            println!("Location taken!");
+            (x, y) = get_user_coordinate();
+        }
 
         board[x - 1][y - 1] = field_value;
 
