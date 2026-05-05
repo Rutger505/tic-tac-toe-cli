@@ -24,13 +24,12 @@ fn main() {
         vec![FieldValue::Empty, FieldValue::Empty, FieldValue::Empty],
     ];
 
-    board[0][1] = FieldValue::Cross;
-
-    let game_won = false;
+    let mut field_value_won: Option<FieldValue> = None;
 
     let total_cells = 3 * 3;
     let mut cells_filled = 0;
-    while !game_won && cells_filled < total_cells {
+
+    while field_value_won.is_none() && cells_filled < total_cells {
         let field_value = if cells_filled % 2 == 0 {
             FieldValue::Cross
         } else {
@@ -48,10 +47,18 @@ fn main() {
 
         board[x - 1][y - 1] = field_value;
 
+        field_value_won = get_game_won(&board);
+
         cells_filled += 1;
     }
 
-    println!("Hello, world!");
+    print_board(&board);
+
+    if let Some(won) = field_value_won {
+        println!("{} Won!!", won.to_string().to_uppercase());
+    } else {
+        println!("Tie..");
+    }
 }
 
 fn get_user_coordinate() -> (usize, usize) {
@@ -80,6 +87,13 @@ fn get_user_number(prompt: &str, min: i32, max: i32) -> i32 {
     }
 
     number.unwrap()
+}
+
+fn get_game_won(_board: &Vec<Vec<FieldValue>>) -> Option<FieldValue> {
+
+    // TODO
+
+    Some(FieldValue::Cross)
 }
 
 fn print_board(board: &Vec<Vec<FieldValue>>) {
