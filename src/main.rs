@@ -50,13 +50,11 @@ fn main() {
 }
 
 fn get_user_coordinate() -> (usize, usize) {
-    let number = get_user_number(1, 3).try_into().unwrap();
-    let number2 = get_user_number(1, 3).try_into().unwrap();
-
-    (number, number2)
+    (get_user_number("Enter row number", 1, 3).try_into().unwrap(),
+     get_user_number("Enter column number", 1, 3).try_into().unwrap())
 }
 
-fn get_user_number(min: i32, max: i32) -> i32 {
+fn get_user_number(prompt: &str, min: i32, max: i32) -> i32 {
     let mut number= "".parse::<i32>();
 
     loop {
@@ -65,7 +63,7 @@ fn get_user_number(min: i32, max: i32) -> i32 {
             _ => {
                 let mut input = String::new();
 
-                print!("Enter a number in range {min}-{max}: ");
+                print!("{prompt} ({min}-{max}): ");
                 io::stdout().flush().unwrap();
 
                 io::stdin().read_line(&mut input).unwrap();
