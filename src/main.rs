@@ -1,7 +1,7 @@
 use std::io;
 use std::io::Write;
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 enum FieldValue {
     Empty,
     Cross,
