@@ -89,11 +89,35 @@ fn get_user_number(prompt: &str, min: i32, max: i32) -> i32 {
     number.unwrap()
 }
 
-fn get_game_won(_board: &Vec<Vec<FieldValue>>) -> Option<FieldValue> {
+fn get_game_won(board: &Vec<Vec<FieldValue>>) -> Option<FieldValue> {
+    let rows = (0..3).map(|r| [board[r][0], board[r][1], board[r][2]]);
+    let cols = (0..3).map(|c| [board[0][c], board[1][c], board[2][c]]);
+    let diags = [
+        [board[0][0], board[1][1], board[2][2]],
+        [board[0][2], board[1][1], board[2][0]],
+    ];
 
-    // TODO
+    rows.chain(cols)
+        .chain(diags)
+        .find_map(|line| check_slice(&line))
+}
 
-    Some(FieldValue::Cross)
+fn check_slice(slice: &[FieldValue]) -> Option<FieldValue> {
+    let first_field_value = slice[0];
+    if first_field_value == FieldValue::Empty {
+        return None;
+    }
+
+    let mut valid = true;
+
+    for i in 1..3 {
+        if slice[i] != first_field_value {
+            valid = false;
+            break;
+        }
+    }
+
+    if valid { Some(first_field_value) } else { None }
 }
 
 fn print_board(board: &Vec<Vec<FieldValue>>) {
