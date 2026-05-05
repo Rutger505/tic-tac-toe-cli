@@ -1,7 +1,7 @@
 use std::io;
 use std::io::Write;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 enum FieldValue {
     Empty,
     Cross,
@@ -26,36 +26,60 @@ fn main() {
 
     board[0][1] = FieldValue::Cross;
 
-    print_board(board);
+    let game_won = false;
 
-    get_user_coordinate();
+    let total_cells = 3 * 3;
+    let mut cells_filled = 0;
+    while !game_won && cells_filled < total_cells {
+        let field_value = if cells_filled % 2 == 0 {
+            FieldValue::Cross
+        } else {
+            FieldValue::Circle
+        };
+
+        print_board(&board);
+
+        let (x, y) = get_user_coordinate();
+
+        board[x - 1][y - 1] = field_value;
+
+        cells_filled += 1;
+    }
 
     println!("Hello, world!");
 }
 
-fn get_user_coordinate() {
-    let number = get_user_number(1, 3);
+fn get_user_coordinate() -> (usize, usize) {
+    let number = get_user_number(1, 3).try_into().unwrap();
+    let number2 = get_user_number(1, 3).try_into().unwrap();
 
-    println!("User choose: {number}");
+    (number, number2)
 }
 
 fn get_user_number(min: i32, max: i32) -> i32 {
-    let mut input = String::new();
+    let mut number= "".parse::<i32>();
 
-    while input.is_empty() || input.parse::<i32>().is_err() {
-        input.clear();
+    loop {
+        match number {
+            Ok(n) if n >= min && n <= max => break,
+            _ => {
+                let mut input = String::new();
 
-        print!("Enter a number in range {min}-{max}: ");
-        io::stdout().flush().unwrap();
+                print!("Enter a number in range {min}-{max}: ");
+                io::stdout().flush().unwrap();
 
-        io::stdin().read_line(&mut input).unwrap();
-        input = input.trim_end().to_string();
+                io::stdin().read_line(&mut input).unwrap();
+                input = input.trim_end().to_string();
+
+                number = input.parse::<i32>();
+            }
+        }
     }
 
-    input.parse().expect("While loop should validate")
+    number.unwrap()
 }
 
-fn print_board(board: Vec<Vec<FieldValue>>) {
+fn print_board(board: &Vec<Vec<FieldValue>>) {
     for row in 0..3 {
         for column in 0..3 {
             print!(" {:^1}", board[row][column].to_string());
