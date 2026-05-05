@@ -38,8 +38,8 @@ fn main() {
 
         print_board(&board);
 
+        println!("{}'s Turn!", field_value.to_string().to_uppercase());
         let (mut x, mut y) = get_user_coordinate();
-
         while board[x - 1][y - 1] != FieldValue::Empty {
             println!("Location taken!");
             (x, y) = get_user_coordinate();
