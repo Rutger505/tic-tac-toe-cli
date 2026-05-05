@@ -109,21 +109,11 @@ fn get_game_won(board: &Vec<Vec<FieldValue>>) -> Option<FieldValue> {
 }
 
 fn check_slice(slice: &[FieldValue]) -> Option<FieldValue> {
-    let first_field_value = slice[0];
-    if first_field_value == FieldValue::Empty {
+    let first = slice[0];
+    if first == FieldValue::Empty {
         return None;
     }
-
-    let mut valid = true;
-
-    for i in 1..3 {
-        if slice[i] != first_field_value {
-            valid = false;
-            break;
-        }
-    }
-
-    if valid { Some(first_field_value) } else { None }
+    slice[1..].iter().all(|&v| v == first).then_some(first)
 }
 
 fn print_board(board: &Vec<Vec<FieldValue>>) {
