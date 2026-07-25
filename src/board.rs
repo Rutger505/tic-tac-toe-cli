@@ -10,7 +10,8 @@ pub fn init_board() -> Board {
     ]
 }
 
-pub fn print_board(board: Board) {
+pub fn print_board(board: Board, title: &str) {
+    println!("{}", title);
     for row in 0..3 {
         for column in 0..3 {
             print!(" {:^1}", board[row][column].to_string());
@@ -35,10 +36,10 @@ pub fn get_game_won(board: Board) -> Option<Cell> {
 
     rows.chain(cols)
         .chain(diags)
-        .find_map(|line| check_slice(&line))
+        .find_map(|line| check_slice(line))
 }
 
-pub fn check_slice(slice: &[Cell]) -> Option<Cell> {
+pub fn check_slice(slice: [Cell; 3]) -> Option<Cell> {
     let first = slice[0];
     if first == Cell::Empty {
         return None;

@@ -4,53 +4,56 @@ mod cell;
 use crate::board::{get_game_won, init_board, print_board};
 use crate::cell::Cell;
 use std::io;
-use std::io::{Read, Write};
+use std::io::Write;
 use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 fn main() {
-    // Get and lock the stdios.
     let stdout = io::stdout().into_raw_mode().unwrap();
-
-    println!("{:?}", io::stdin().keys().next().unwrap().unwrap());
 
     let mut board = init_board();
 
-    let mut field_value_won: Option<Cell> = None;
+    let mut cell_won: Option<Cell>;
 
     let total_cells = 3 * 3;
     let mut cells_filled = 0;
 
-    while field_value_won.is_none() && cells_filled < total_cells {
-        let field_value = if cells_filled % 2 == 0 {
+    loop {
+        let key = io::stdin().keys().next().unwrap().unwrap();
+        println!("{:?}", key);
+
+        let cell = if cells_filled % 2 == 0 {
             Cell::Cross
         } else {
             Cell::Circle
         };
 
-        print_board(board);
+        print_board(board, &format!("{}'s Turn!", cell.to_string()));
 
-        println!("{}'s Turn!", field_value.to_string().to_uppercase());
         let (mut x, mut y) = get_user_coordinate();
         while board[x - 1][y - 1] != Cell::Empty {
             println!("Location taken!");
             (x, y) = get_user_coordinate();
         }
 
-        board[x - 1][y - 1] = field_value;
+        board[x - 1][y - 1] = cell;
 
-        field_value_won = get_game_won(board);
+        cell_won = get_game_won(board);
 
         cells_filled += 1;
+
+        if cell_won.is_some() && cells_filled <= total_cells {
+            break;
+        }
     }
 
-    print_board(board);
-
-    if let Some(won) = field_value_won {
-        println!("{} Won!!", won.to_string().to_uppercase());
+    let title = if let Some(won) = cell_won {
+        &format!("{} Won!!", won.to_string().to_uppercase())
     } else {
-        println!("Tie..");
-    }
+        "Tie.."
+    };
+
+    print_board(board, title);
 }
 
 fn get_user_coordinate() -> (usize, usize) {
