@@ -1,5 +1,7 @@
 use std::io;
-use std::io::Write;
+use std::io::{Read, Write};
+use std::os::fd::AsRawFd;
+use termios::*;
 
 #[derive(PartialEq, Clone, Copy)]
 enum FieldValue {
@@ -18,6 +20,20 @@ impl std::fmt::Display for FieldValue {
 }
 
 fn main() {
+    let stdin = io::stdin().as_raw_fd();
+    let mut termios = Termios::from_fd(stdin).unwrap();
+
+    // Input, no line buffering
+    println!("{}", termios.c_lflag & ICANON);
+
+    return;
+
+    let mut input: [u8; 1] = [0];
+    io::stdin().read(&mut input).unwrap();
+    println!("{:?}", input);
+
+    return;
+
     let mut board = vec![
         vec![FieldValue::Empty, FieldValue::Empty, FieldValue::Empty],
         vec![FieldValue::Empty, FieldValue::Empty, FieldValue::Empty],
