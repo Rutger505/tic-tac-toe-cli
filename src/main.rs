@@ -1,17 +1,23 @@
 mod board;
 mod cell;
+mod interface;
 
 use crate::board::{get_game_won, init_board, is_board_full, print_board};
 use crate::cell::Cell;
+use crate::interface::Interface;
 use std::io;
 use std::io::Write;
 use termion::input::TermRead;
-use termion::raw::IntoRawMode;
 
 fn main() {
-    let _ = io::stdout().into_raw_mode().unwrap();
-
+    let mut interface = Interface::new();
     let mut board = init_board();
+
+    interface.print_board(board, "Test title");
+
+    io::stdin().keys().next();
+
+    return;
 
     let mut cell_won: Option<Cell>;
 

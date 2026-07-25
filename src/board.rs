@@ -1,6 +1,6 @@
 use crate::cell::Cell;
 
-type Board = [[Cell; 3]; 3];
+pub type Board = [[Cell; 3]; 3];
 
 pub fn init_board() -> Board {
     [
