@@ -1,7 +1,7 @@
 mod board;
 mod cell;
 
-use crate::board::{get_game_won, init_board, print_board};
+use crate::board::{get_game_won, init_board, is_board_full, print_board};
 use crate::cell::Cell;
 use std::io;
 use std::io::Write;
@@ -15,14 +15,13 @@ fn main() {
 
     let mut cell_won: Option<Cell>;
 
-    let total_cells = 3 * 3;
-    let mut cells_filled = 0;
+    let mut turn = 0;
 
     loop {
         let key = io::stdin().keys().next().unwrap().unwrap();
         println!("{:?}", key);
 
-        let cell = if cells_filled % 2 == 0 {
+        let cell = if turn % 2 == 0 {
             Cell::Cross
         } else {
             Cell::Circle
@@ -40,9 +39,9 @@ fn main() {
 
         cell_won = get_game_won(board);
 
-        cells_filled += 1;
+        turn += 1;
 
-        if cell_won.is_some() && cells_filled <= total_cells {
+        if cell_won.is_some() || is_board_full(board) {
             break;
         }
     }
@@ -56,6 +55,7 @@ fn main() {
     print_board(board, title);
 }
 
+// TODO replace with tui navigation \/
 fn get_user_coordinate() -> (usize, usize) {
     (
         get_user_number("Enter row number", 1, 3)

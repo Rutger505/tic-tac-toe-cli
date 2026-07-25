@@ -44,3 +44,14 @@ pub fn check_slice(slice: [Cell; 3]) -> Option<Cell> {
     }
     slice[1..].iter().all(|&v| v == first).then_some(first)
 }
+
+pub fn is_board_full(board: Board) -> bool {
+    for row in board {
+        for col in row {
+            if col == Cell::Empty {
+                return false;
+            }
+        }
+    }
+    true
+}
