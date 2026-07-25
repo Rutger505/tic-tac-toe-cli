@@ -9,7 +9,7 @@ use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 fn main() {
-    let stdout = io::stdout().into_raw_mode().unwrap();
+    io::stdout().into_raw_mode().unwrap();
 
     let mut board = init_board();
 
@@ -27,7 +27,7 @@ fn main() {
             Cell::Circle
         };
 
-        print_board(board, &format!("{}'s Turn!", cell.to_string()));
+        print_board(board, &format!("{}'s Turn!", cell));
 
         let (mut x, mut y) = get_user_coordinate();
         while board[x - 1][y - 1] != Cell::Empty {
