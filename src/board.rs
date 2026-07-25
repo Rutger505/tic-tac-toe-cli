@@ -34,9 +34,7 @@ pub fn get_game_won(board: Board) -> Option<Cell> {
         [board[0][2], board[1][1], board[2][0]],
     ];
 
-    rows.chain(cols)
-        .chain(diags)
-        .find_map(|line| check_slice(line))
+    rows.chain(cols).chain(diags).find_map(check_slice)
 }
 
 pub fn check_slice(slice: [Cell; 3]) -> Option<Cell> {
