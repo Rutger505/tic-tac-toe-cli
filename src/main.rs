@@ -9,7 +9,7 @@ use termion::input::TermRead;
 use termion::raw::IntoRawMode;
 
 fn main() {
-    io::stdout().into_raw_mode().unwrap();
+    let _ = io::stdout().into_raw_mode().unwrap();
 
     let mut board = init_board();
 
