@@ -1,15 +1,16 @@
 use crate::board::Board;
-use std::io::Write;
 use std::io::{Stdout, stdout};
-use termion::raw::{IntoRawMode, RawTerminal};
-
+use std::io::{Write, stdin};
 use termion::clear;
 use termion::cursor::Goto;
+use termion::event::Key::{Char, Down, Left, Right, Up};
+use termion::input::TermRead;
+use termion::raw::{IntoRawMode, RawTerminal};
 
 pub struct Interface {
     pub raw_terminal: RawTerminal<Stdout>,
-    x: u16,
-    y: u16,
+    board_x: u16,
+    board_y: u16,
 }
 
 impl Interface {
@@ -27,8 +28,8 @@ impl Interface {
 
         Interface {
             raw_terminal,
-            x: Self::BOARD_COLS[0],
-            y: Self::BOARD_ROWS[0],
+            board_x: 0,
+            board_y: 0,
         }
     }
 
@@ -49,9 +50,29 @@ impl Interface {
             }
         }
 
-        print!("{}", Goto(self.x, self.y));
-
         stdout().flush().unwrap();
+    }
+
+    pub fn get_user_cell(&mut self) {
+        loop {
+            print!(
+                "{}",
+                Goto(
+                    2 + (self.board_x * 4),
+                    Self::BOARD_START + (self.board_y * 2)
+                )
+            );
+            stdout().flush().unwrap();
+
+            let key = stdin().keys().next().unwrap().unwrap();
+            match key {
+                Char('k') | Up => self.board_y = (self.board_y + 2) % 3,
+                Char('j') | Down => self.board_y = (self.board_y + 1) % 3,
+                Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
+                Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
+                _ => {}
+            }
+        }
     }
 }
 

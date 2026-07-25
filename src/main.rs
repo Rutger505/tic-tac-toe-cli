@@ -14,8 +14,7 @@ fn main() {
     let mut board = init_board();
 
     interface.print_board(board, "Test title");
-
-    io::stdin().keys().next();
+    interface.get_user_cell(board, "Test title");
 
     return;
 
