@@ -1,7 +1,7 @@
 use std::io;
 use std::io::{Read, Write};
-use std::os::fd::AsRawFd;
-use termios::*;
+use termion::input::TermRead;
+use termion::raw::IntoRawMode;
 
 #[derive(PartialEq, Clone, Copy)]
 enum FieldValue {
@@ -20,11 +20,15 @@ impl std::fmt::Display for FieldValue {
 }
 
 fn main() {
-    let stdin = io::stdin().as_raw_fd();
-    let mut termios = Termios::from_fd(stdin).unwrap();
+    // Get and lock the stdios.
+    let stdout = io::stdout();
+    let mut stdout = stdout.lock();
+    let stdin = io::stdin();
+    let stdin = stdin.lock();
 
-    // Input, no line buffering
-    println!("{}", termios.c_lflag & ICANON);
+    let stdout = stdout.into_raw_mode().unwrap();
+
+    println!("{:?}", stdin.keys().next().unwrap().unwrap());
 
     return;
 
