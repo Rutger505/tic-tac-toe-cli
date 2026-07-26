@@ -42,8 +42,7 @@ impl Board {
             [self.cells[0][2], self.cells[1][1], self.cells[2][0]],
         ];
 
-        // rows.chain(cols).chain(diags).find_map(check_slice)
-        Some(Cell::Circle)
+        rows.chain(cols).chain(diags).find_map(Self::check_slice)
     }
     fn check_slice(slice: [Cell; 3]) -> Option<Cell> {
         let first = slice[0];
