@@ -1,4 +1,4 @@
-use crate::board::Board;
+use crate::cell::Cell;
 use std::io::{Stdout, stdout};
 use std::io::{Write, stdin};
 use termion::clear;
@@ -9,8 +9,8 @@ use termion::raw::{IntoRawMode, RawTerminal};
 
 pub struct Interface {
     pub raw_terminal: RawTerminal<Stdout>,
-    board_x: u16,
-    board_y: u16,
+    board_x: u8,
+    board_y: u8,
 }
 
 impl Interface {
@@ -33,7 +33,7 @@ impl Interface {
         }
     }
 
-    pub fn print_board(&self, board: Board, title: &str) {
+    pub fn print_board(&self, board: [[Cell; 3]; 3], title: &str) {
         print!("{}", clear::All);
 
         print!("{}{}", Goto(1, 1), title);
@@ -52,13 +52,13 @@ impl Interface {
         stdout().flush().unwrap();
     }
 
-    pub fn get_user_cell(&mut self) -> (u16, u16) {
+    pub fn get_user_cell(&mut self) -> (u8, u8) {
         loop {
             print!(
                 "{}",
                 Goto(
-                    2 + (self.board_x * 4),
-                    Self::BOARD_START + (self.board_y * 2)
+                    2 + (self.board_x as u16 * 4),
+                    Self::BOARD_START + (self.board_y as u16 * 2)
                 )
             );
             stdout().flush().unwrap();
