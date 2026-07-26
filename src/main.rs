@@ -11,8 +11,7 @@ fn main() {
     let mut board = Board::new();
 
     let mut turn = 0;
-
-    loop {
+    while board.get_game_won().is_none() || !board.is_full() {
         let cell = if turn % 2 == 0 {
             Cell::Cross
         } else {
@@ -31,10 +30,6 @@ fn main() {
         }
 
         board.set_cell(x, y, cell);
-
-        if board.get_game_won().is_some() || board.is_full() {
-            break;
-        }
 
         turn += 1;
     }
