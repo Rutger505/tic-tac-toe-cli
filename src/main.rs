@@ -20,16 +20,19 @@ fn main() {
 
         interface.print_board(board.get_cells(), &format!("{}'s Turn!", cell));
 
-        let (mut x, mut y) = interface.get_user_cell();
-        while board.is_place_taken(x, y) {
+        loop {
+            let (x, y) = interface.get_user_cell();
+
+            if !board.is_place_taken(x, y) {
+                board.set_cell(x, y, cell);
+                break;
+            }
+
             interface.print_board(
                 board.get_cells(),
                 &format!("{}'s Turn! *Location taken!*", cell),
             );
-            (x, y) = interface.get_user_cell();
         }
-
-        board.set_cell(x, y, cell);
 
         turn += 1;
     }
