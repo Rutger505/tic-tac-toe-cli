@@ -2,7 +2,7 @@ mod board;
 mod cell;
 mod interface;
 
-use crate::board::{get_game_won, init_board, is_board_full, print_board};
+use crate::board::{get_game_won, init_board, is_board_full};
 use crate::cell::Cell;
 use crate::interface::Interface;
 use std::io;
@@ -13,34 +13,25 @@ fn main() {
     let mut interface = Interface::new();
     let mut board = init_board();
 
-    interface.print_board(board, "Test title");
-    interface.get_user_cell(board, "Test title");
-
-    return;
-
     let mut cell_won: Option<Cell>;
-
     let mut turn = 0;
 
     loop {
-        let key = io::stdin().keys().next().unwrap().unwrap();
-        println!("{:?}", key);
-
         let cell = if turn % 2 == 0 {
             Cell::Cross
         } else {
             Cell::Circle
         };
 
-        print_board(board, &format!("{}'s Turn!", cell));
+        interface.print_board(board, &format!("{}'s Turn!", cell));
 
-        let (mut x, mut y) = get_user_coordinate();
-        while board[x - 1][y - 1] != Cell::Empty {
-            println!("Location taken!");
-            (x, y) = get_user_coordinate();
+        let (mut x, mut y) = interface.get_user_cell();
+        while board[x as usize][y as usize] != Cell::Empty {
+            interface.print_board(board, &format!("{}'s Turn! *Location taken!*", cell));
+            (x, y) = interface.get_user_cell();
         }
 
-        board[x - 1][y - 1] = cell;
+        board[x as usize][y as usize] = cell;
 
         cell_won = get_game_won(board);
 
@@ -56,41 +47,5 @@ fn main() {
     } else {
         "Tie.."
     };
-
-    print_board(board, title);
-}
-
-// TODO replace with tui navigation \/
-fn get_user_coordinate() -> (usize, usize) {
-    (
-        get_user_number("Enter row number", 1, 3)
-            .try_into()
-            .unwrap(),
-        get_user_number("Enter column number", 1, 3)
-            .try_into()
-            .unwrap(),
-    )
-}
-
-fn get_user_number(prompt: &str, min: i32, max: i32) -> i32 {
-    let mut number = "".parse::<i32>();
-
-    loop {
-        match number {
-            Ok(n) if n >= min && n <= max => break,
-            _ => {
-                let mut input = String::new();
-
-                print!("{prompt} ({min}-{max}): ");
-                io::stdout().flush().unwrap();
-
-                io::stdin().read_line(&mut input).unwrap();
-                input = input.trim_end().to_string();
-
-                number = input.parse::<i32>();
-            }
-        }
-    }
-
-    number.unwrap()
+    interface.print_board(board, title);
 }
