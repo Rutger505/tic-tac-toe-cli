@@ -16,7 +16,7 @@ pub struct Interface {
 impl Interface {
     const BOARD_START: u16 = 2;
     const BOARD_END: u16 = 2 + 5;
-    const BOARD_COLS: [u16; 3] = [2, 5, 8];
+    const BOARD_COLS: [u16; 3] = [2, 6, 10];
     const BOARD_ROWS: [u16; 3] = [
         Self::BOARD_START,
         Self::BOARD_START + 2,
@@ -37,23 +37,22 @@ impl Interface {
         print!("{}", clear::All);
 
         print!("{}{}", Goto(1, 1), title);
+        print!("{}   │   │   ", Goto(1, Self::BOARD_START));
+        print!("{}───┼───┼───", Goto(1, Self::BOARD_START + 1));
+        print!("{}   │   │   ", Goto(1, Self::BOARD_START + 2));
+        print!("{}───┼───┼───", Goto(1, Self::BOARD_START + 3));
+        print!("{}   │   │   ", Goto(1, Self::BOARD_START + 4));
 
-        print!("{}   |   |   ", Goto(1, Self::BOARD_START));
-        print!("{}===========", Goto(1, Self::BOARD_START + 1));
-        print!("{}   |   |   ", Goto(1, Self::BOARD_START + 2));
-        print!("{}===========", Goto(1, Self::BOARD_START + 3));
-        print!("{}   |   |   ", Goto(1, Self::BOARD_START + 4));
-
-        for (row_data, row_coordinate) in board.iter().zip(Self::BOARD_ROWS) {
-            for (col_data, col_coordinate) in row_data.iter().zip(Self::BOARD_COLS) {
-                print!("{}{}", Goto(row_coordinate, col_coordinate), col_data);
+        for (&col, col_data) in Self::BOARD_COLS.iter().zip(board) {
+            for (&row, row_data) in Self::BOARD_ROWS.iter().zip(col_data) {
+                print!("{}{}", Goto(col, row), row_data);
             }
         }
 
         stdout().flush().unwrap();
     }
 
-    pub fn get_user_cell(&mut self) {
+    pub fn get_user_cell(&mut self) -> (u16, u16) {
         loop {
             print!(
                 "{}",
@@ -70,6 +69,7 @@ impl Interface {
                 Char('j') | Down => self.board_y = (self.board_y + 1) % 3,
                 Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
                 Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
+                Char(' ') => return (self.board_x, self.board_y),
                 _ => {}
             }
         }
