@@ -3,7 +3,7 @@ use std::io::{Stdout, stdout};
 use std::io::{Write, stdin};
 use termion::clear;
 use termion::cursor::Goto;
-use termion::event::Key::{Char, Down, Left, Right, Up};
+use termion::event::Key::{Char, Ctrl, Down, Left, Right, Up};
 use termion::input::TermRead;
 use termion::raw::{IntoRawMode, RawTerminal};
 
@@ -11,6 +11,11 @@ pub struct Interface {
     pub raw_terminal: RawTerminal<Stdout>,
     board_x: u8,
     board_y: u8,
+}
+
+pub enum InterfaceResult {
+    Exited,
+    Cell(u8, u8),
 }
 
 impl Interface {
@@ -25,7 +30,6 @@ impl Interface {
 
     pub fn new() -> Interface {
         let raw_terminal = stdout().into_raw_mode().unwrap();
-
         Interface {
             raw_terminal,
             board_x: 0,
@@ -52,7 +56,7 @@ impl Interface {
         stdout().flush().unwrap();
     }
 
-    pub fn get_user_cell(&mut self) -> (u8, u8) {
+    pub fn get_user_cell(&mut self) -> InterfaceResult {
         loop {
             print!(
                 "{}",
@@ -69,7 +73,11 @@ impl Interface {
                 Char('j') | Down => self.board_y = (self.board_y + 1) % 3,
                 Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
                 Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
-                Char(' ') => return (self.board_x, self.board_y),
+
+                Char(' ') => return InterfaceResult::Cell(self.board_x, self.board_y),
+
+                Ctrl('c') | Char('q') => return InterfaceResult::Exited,
+
                 _ => {}
             }
         }
