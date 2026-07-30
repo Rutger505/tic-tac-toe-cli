@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "tic-tac-toe-cli"
+name = "tic-tac-toe-tui"
 version = "0.1.0"
 dependencies = [
  "termion",

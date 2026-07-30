@@ -1,2 +1,2 @@
-# tic-tac-toe-cli
-Tic tac toe cli in Rust to learn the language
+# tic-tac-toe-tui
+Tic tac toe tui in Rust to learn the language
