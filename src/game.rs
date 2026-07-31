@@ -1,6 +1,5 @@
 use crate::board::Board;
 use crate::cell::Cell;
-use crate::interface::{Interface, InterfaceResult};
 
 pub struct Game {
     turn: u8,
@@ -21,11 +20,8 @@ pub enum PlayRoundError {
 }
 
 impl Game {
-    pub fn new() -> Game {
-        Game {
-            turn: 0,
-            board: Board::new(),
-        }
+    pub fn new(board: Board) -> Game {
+        Game { turn: 0, board }
     }
 
     pub fn get_turn_cell(&self) -> Cell {

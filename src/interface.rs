@@ -1,4 +1,5 @@
 use crate::cell::Cell;
+use crate::game::Game;
 use std::io::{Stdout, stdout};
 use std::io::{Write, stdin};
 use termion::clear;
@@ -9,6 +10,7 @@ use termion::raw::{IntoRawMode, RawTerminal};
 
 pub struct Interface {
     pub raw_terminal: RawTerminal<Stdout>,
+    game: Game,
     board_x: u8,
     board_y: u8,
 }
@@ -28,10 +30,10 @@ impl Interface {
         Self::BOARD_START + 4,
     ];
 
-    pub fn new() -> Interface {
-        let raw_terminal = stdout().into_raw_mode().unwrap();
+    pub fn new(game: Game) -> Interface {
         Interface {
-            raw_terminal,
+            raw_terminal: stdout().into_raw_mode().unwrap(),
+            game,
             board_x: 0,
             board_y: 0,
         }
