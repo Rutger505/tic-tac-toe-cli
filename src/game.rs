@@ -28,18 +28,20 @@ impl Game {
         }
     }
 
-    pub fn play_round(&mut self, x: u8, y: u8) -> Result<PlayRoundResult, PlayRoundError> {
-        let cell = if self.turn % 2 == 0 {
+    pub fn get_turn_cell(&self) -> Cell {
+        if self.turn % 2 == 0 {
             Cell::Cross
         } else {
             Cell::Circle
-        };
+        }
+    }
 
+    pub fn play_round(&mut self, x: u8, y: u8) -> Result<PlayRoundResult, PlayRoundError> {
         if self.board.is_place_taken(x, y) {
             return Err(PlayRoundError::LocationTaken);
         }
 
-        self.board.set_cell(x, y, cell);
+        self.board.set_cell(x, y, self.get_turn_cell());
 
         self.turn += 1;
 
