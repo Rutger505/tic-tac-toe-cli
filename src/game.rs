@@ -1,0 +1,54 @@
+use crate::board::Board;
+use crate::cell::Cell;
+use crate::interface::{Interface, InterfaceResult};
+
+pub struct Game {
+    turn: u8,
+    board: Board,
+}
+
+pub enum GameResult {
+    CellWon(Cell),
+    Tie,
+}
+
+pub enum PlayRoundResult {
+    GameFinished(GameResult),
+    Placed,
+}
+pub enum PlayRoundError {
+    LocationTaken,
+}
+
+impl Game {
+    pub fn new() -> Game {
+        Game {
+            turn: 0,
+            board: Board::new(),
+        }
+    }
+
+    pub fn play_round(&mut self, x: u8, y: u8) -> Result<PlayRoundResult, PlayRoundError> {
+        let cell = if self.turn % 2 == 0 {
+            Cell::Cross
+        } else {
+            Cell::Circle
+        };
+
+        if self.board.is_place_taken(x, y) {
+            return Err(PlayRoundError::LocationTaken);
+        }
+
+        self.board.set_cell(x, y, cell);
+
+        self.turn += 1;
+
+        if let Some(cell_won) = self.board.get_game_won() {
+            Ok(PlayRoundResult::GameFinished(GameResult::CellWon(cell_won)))
+        } else if self.board.is_full() {
+            Ok(PlayRoundResult::GameFinished(GameResult::Tie))
+        } else {
+            Ok(PlayRoundResult::Placed)
+        }
+    }
+}

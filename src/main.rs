@@ -1,5 +1,6 @@
 mod board;
 mod cell;
+mod game;
 mod interface;
 
 use crate::board::Board;
