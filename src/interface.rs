@@ -40,10 +40,9 @@ impl Interface {
     }
 
     pub fn listen_to_input(&mut self) {
-        let mut title: String;
+        let mut title = format!("{}'s Turn!", self.board.get_turn_cell());
 
         loop {
-            title = format!("{}'s Turn!", self.board.get_turn_cell());
             self.print_ui(self.board.get_cells(), &title);
 
             let key = stdin().keys().next().unwrap().unwrap();
@@ -73,7 +72,9 @@ impl Interface {
                             }
                             break;
                         }
-                        PlayRoundResult::Placed => {}
+                        PlayRoundResult::Placed => {
+                            title = format!("{}'s Turn!", self.board.get_turn_cell());
+                        }
                     },
                 },
 
