@@ -1,5 +1,5 @@
+use crate::board::{Board, GameResult, PlayRoundError, PlayRoundResult};
 use crate::cell::Cell;
-use crate::game::{Game, GameResult, PlayRoundError, PlayRoundResult};
 use std::io::{Stdout, stdout};
 use std::io::{Write, stdin};
 use termion::clear;
@@ -10,7 +10,7 @@ use termion::raw::{IntoRawMode, RawTerminal};
 
 pub struct Interface {
     pub raw_terminal: RawTerminal<Stdout>,
-    game: Game,
+    board: Board,
     board_x: u8,
     board_y: u8,
 }
@@ -30,10 +30,10 @@ impl Interface {
         Self::BOARD_START + 4,
     ];
 
-    pub fn new(game: Game) -> Interface {
+    pub fn new(board: Board) -> Interface {
         Interface {
             raw_terminal: stdout().into_raw_mode().unwrap(),
-            game,
+            board,
             board_x: 0,
             board_y: 0,
         }
@@ -43,8 +43,8 @@ impl Interface {
         let mut title: String;
 
         loop {
-            title = format!("{}'s Turn!", self.game.get_turn_cell());
-            self.print_ui(self.game.get_cells(), &title);
+            title = format!("{}'s Turn!", self.board.get_turn_cell());
+            self.print_ui(self.board.get_cells(), &title);
 
             let key = stdin().keys().next().unwrap().unwrap();
             match key {
@@ -53,11 +53,11 @@ impl Interface {
                 Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
                 Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
 
-                Char(' ') => match self.game.play_round(self.board_x, self.board_y) {
+                Char(' ') => match self.board.play_round(self.board_x, self.board_y) {
                     Err(reason) => match reason {
                         PlayRoundError::LocationTaken => {
                             title =
-                                format!("{}'s Turn! *Location Taken*", self.game.get_turn_cell())
+                                format!("{}'s Turn! *Location Taken*", self.board.get_turn_cell())
                         }
                     },
 
@@ -83,7 +83,7 @@ impl Interface {
             }
         }
 
-        self.print_ui(self.game.get_cells(), &title);
+        self.print_ui(self.board.get_cells(), &title);
     }
 
     pub fn print_ui(&self, board: [[Cell; 3]; 3], title: &str) {
