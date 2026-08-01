@@ -32,6 +32,10 @@ impl Game {
         }
     }
 
+    pub fn get_cells(&self) -> [[Cell; 3]; 3] {
+        self.board.get_cells()
+    }
+
     pub fn play_round(&mut self, x: u8, y: u8) -> Result<PlayRoundResult, PlayRoundError> {
         if self.board.is_place_taken(x, y) {
             return Err(PlayRoundError::LocationTaken);

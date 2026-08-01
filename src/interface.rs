@@ -1,5 +1,5 @@
 use crate::cell::Cell;
-use crate::game::Game;
+use crate::game::{Game, GameResult, PlayRoundError, PlayRoundResult};
 use std::io::{Stdout, stdout};
 use std::io::{Write, stdin};
 use termion::clear;
@@ -39,7 +39,54 @@ impl Interface {
         }
     }
 
-    pub fn print_board(&self, board: [[Cell; 3]; 3], title: &str) {
+    pub fn listen_to_input(&mut self) {
+        let mut title: String;
+
+        loop {
+            title = format!("{}'s Turn!", self.game.get_turn_cell());
+            self.print_ui(self.game.get_cells(), &title);
+
+            let key = stdin().keys().next().unwrap().unwrap();
+            match key {
+                Char('k') | Up => self.board_y = (self.board_y + 2) % 3,
+                Char('j') | Down => self.board_y = (self.board_y + 1) % 3,
+                Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
+                Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
+
+                Char(' ') => match self.game.play_round(self.board_x, self.board_y) {
+                    Err(reason) => match reason {
+                        PlayRoundError::LocationTaken => {
+                            title =
+                                format!("{}'s Turn! *Location Taken*", self.game.get_turn_cell())
+                        }
+                    },
+
+                    Ok(reason) => match reason {
+                        PlayRoundResult::GameFinished(game_result) => {
+                            match game_result {
+                                GameResult::CellWon(cell_won) => {
+                                    title = format!("{} Won!!", cell_won.to_string().to_uppercase())
+                                }
+                                GameResult::Tie => {
+                                    title = "Tie..".to_string();
+                                }
+                            }
+                            break;
+                        }
+                        PlayRoundResult::Placed => {}
+                    },
+                },
+
+                Ctrl('c') | Char('q') => return,
+
+                _ => {}
+            }
+        }
+
+        self.print_ui(self.game.get_cells(), &title);
+    }
+
+    pub fn print_ui(&self, board: [[Cell; 3]; 3], title: &str) {
         print!("{}", clear::All);
 
         print!("{}{}", Goto(1, 1), title);
@@ -55,34 +102,15 @@ impl Interface {
             }
         }
 
+        print!(
+            "{}",
+            Goto(
+                2 + (self.board_x as u16 * 4),
+                Self::BOARD_START + (self.board_y as u16 * 2)
+            )
+        );
+
         stdout().flush().unwrap();
-    }
-
-    pub fn get_user_cell(&mut self) -> InterfaceResult {
-        loop {
-            print!(
-                "{}",
-                Goto(
-                    2 + (self.board_x as u16 * 4),
-                    Self::BOARD_START + (self.board_y as u16 * 2)
-                )
-            );
-            stdout().flush().unwrap();
-
-            let key = stdin().keys().next().unwrap().unwrap();
-            match key {
-                Char('k') | Up => self.board_y = (self.board_y + 2) % 3,
-                Char('j') | Down => self.board_y = (self.board_y + 1) % 3,
-                Char('h') | Left => self.board_x = (self.board_x + 2) % 3,
-                Char('l') | Right => self.board_x = (self.board_x + 1) % 3,
-
-                Char(' ') => return InterfaceResult::Cell(self.board_x, self.board_y),
-
-                Ctrl('c') | Char('q') => return InterfaceResult::Exited,
-
-                _ => {}
-            }
-        }
     }
 }
 
